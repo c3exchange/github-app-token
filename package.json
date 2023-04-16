@@ -1,0 +1,13 @@
+{
+  "name": "github-app-token",
+  "version": "1.0.0",
+  "description": "Ask to an installed GitHub application for an access token",
+  "bin": {
+    "github-app-token": "bin/cli.js"
+  },
+  "author": "C3.io",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "license": "Apache-2.0"
+}
