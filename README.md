@@ -22,10 +22,10 @@ newly created application.
 
 ## Usage
 
-Make sure you have [NodeJS](https://nodejs.org/en/download) installed as well as [`npm`](https://www.npmjs.com/package/npm) and
-[`npx`](https://www.npmjs.com/package/npx) modules.
+Make sure you have [NodeJS](https://nodejs.org/en/download) installed as well as the latest version of the
+[`npm`](https://www.npmjs.com/package/npm) package.
 
-Run `npx github:c3exchange/github-app-token {parameters}`
+Run `npx [-y] github:c3exchange/github-app-token@latest {parameters}`
 
 Where `parameters` can be:
 
@@ -35,13 +35,18 @@ script will read the private key from the standard input.
 * `--perm {list-of-permissions}` - A list of requested permissions separated by comma. See below for details.
 * `--ua {user-agent}` - An  user agent to use in web requests. Defaults to: `GitHubAppToken-Retriever/1.0`.
 
+##### NOTE
+
+* Use `-y` flag on automated environments like deployment ones to avoid undesired prompts.
+
 ### Permissions
 
 Each permission consist in strings with the following format: `access:type`
 
 Type can be: `contents`, `packages`, `secrets`, etc. See GitHub documentation for a complete list of access types.
 
-Access is optional and must be separated from the type with a `:` (dash). If specified, it can be `read`, `write` or `admin`.
+`access` is optional and must be separated from the type with a `:` (colon). If specified, it must be `read`, `write` or `admin`.
+ Defaults to `read`.
 
 Some examples:
 
