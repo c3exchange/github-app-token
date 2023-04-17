@@ -42,7 +42,7 @@ async function main() {
 	const currTime = Math.floor(Date.now() / 1000);
 	const payload = toBase64Url(Buffer.from(JSON.stringify({
 		"iat": currTime,
-		"exp": currTime + 540,
+		"exp": currTime + 300, // the validity of the token is 5 minutes
 		"iss": opts.applicationId.toString()
 	}), "utf8"));
 
