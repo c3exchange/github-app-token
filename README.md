@@ -29,11 +29,16 @@ Run `npx [-y] github:c3exchange/github-app-token@latest {parameters}`
 
 Where `parameters` can be:
 
-* `--pk {private-key-file}` - A file containing the generated RSA-256 private key. If `private-key-file` is equal to `stdin`, the
-script will read the private key from the standard input.
-* `--app-id {application-id}` - Specifies the application ID.
-* `--perm {list-of-permissions}` - A list of requested permissions separated by comma. See below for details.
-* `--ua {user-agent}` - An  user agent to use in web requests. Defaults to: `GitHubAppToken-Retriever/1.0`.
+| Parameter                       | Description                                                                                                                                                   |
+|---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `--pk {private-key-file}`       | A file containing the generated RSA-256 private key. If `private-key-file` is equal to `stdin`, the script will read the private key from the standard input. |
+| `--app-id {application-id}`     | Specifies the application ID.                                                                                                                                 |
+| `--inst-id {installation-id}`   | Specifies the installation ID. This parameter is optional.                                                                                                    |
+| `--org {organization-name}`     | Restricts the lookup of the installation ID to the given organization.                                                                                        |
+| `--user {user-name}`            | Restricts the lookup of the installation ID to the given user.                                                                                                |
+| `--perm {list-of-permissions}`  | A list of requested permissions separated by comma. See below for details.                                                                                    |
+| `--scope {list-of-permissions}` | Alias of `--perm`.                                                                                                                                            |
+| `--ua {user-agent}`             | An  user agent to use in web requests. Defaults to: `GitHubAppToken-Retriever/1.0`.                                                                           |
 
 ##### NOTE
 
@@ -43,7 +48,7 @@ script will read the private key from the standard input.
 
 Each permission consist in strings with the following format: `access:type`
 
-Type can be: `contents`, `packages`, `secrets`, etc. See GitHub documentation for a complete list of access types.
+Type can be: `contents`, `packages`, `secrets`, etc. See [GitHub documentation](https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#create-an-installation-access-token-for-an-app) for a complete list of access types.
 
 `access` is optional and must be separated from the type with a `:` (colon). If specified, it must be `read`, `write` or `admin`.
  Defaults to `read`.
