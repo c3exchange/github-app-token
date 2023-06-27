@@ -19,11 +19,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@c3exchange'
+          always-auth: true
 
       - name: Publishing
         shell: bash
         run: |
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}"                 > .npmrc
-          echo "@${{ github.repository_owner }}:registry=https://npm.pkg.github.com/" >> .npmrc
-          chmod 0600 .npmrc
           npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

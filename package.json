@@ -1,6 +1,10 @@
 {
-  "name": "github-app-token",
+  "name": "@c3exchange/github-app-token",
   "version": "1.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/c3exchange/github-app-token.git"
+  },
   "description": "Ask to an installed GitHub application for an access token",
   "bin": {
     "github-app-token": "bin/cli.js"
