@@ -17,7 +17,7 @@ const fs = require("fs");
 // -----------------------------------------------------------------------------
 
 main().catch((err) => {
-	console.error("Error: " + err.message);
+	console.error("Error:", (err.stack ? err.stack : err.message));
 	process.exit(1);
 });
 
@@ -52,6 +52,7 @@ async function main() {
 	const jwtToken = header + "." + payload + "." + toBase64Url(signer.sign(privateKey));
 
 	// build header for requests
+	let res;
 	const reqHdrs = {
 		"Accept": "application/vnd.github+json",
 		"Authorization": "Bearer " + jwtToken,
@@ -59,28 +60,46 @@ async function main() {
 		"X-GitHub-Api-Version": "2022-11-28"
 	};
 
-	// retrieve application's installation id
-	let res = await webRequest("https://api.github.com/app/installations", {
-		headers: reqHdrs
-	});
-	if (res.statusCode !== 200) {
-		console.log(res.data);
-		throw new Error("Retrieval of installed applications failed with status " + res.statusCode.toString());
-	}
-
 	let installationId = 0;
-	for (const app of JSON.parse(res.data)) {
-		if (app.app_id === opts.applicationId) {
-			installationId = app.id;
-			break;
-		}
+	let accessTokensUrl = "";
+	if (opts.installationId) {
+		installationId = opts.installationId;
 	}
-	if (installationId == 0) {
-		throw new Error("Unable to locate installation ID");
+	else {
+		// retrieve application's installation id
+		res = await webRequest("https://api.github.com/app/installations", {
+			headers: reqHdrs
+		});
+		if (res.statusCode !== 200) {
+			console.log(res.data);
+			throw new Error("Retrieval of installed applications failed with status " + res.statusCode.toString());
+		}
+
+		for (const app of JSON.parse(res.data)) {
+			if (opts.userOrg) {
+				if (app.account?.login != opts.userOrg) {
+					continue;
+				}
+			}
+
+			if (app.app_id === opts.applicationId) {
+				installationId = app.id;
+				if (app.access_tokens_url) {
+					accessTokensUrl = app.access_tokens_url;
+				}
+				break;
+			}
+		}
+		if (installationId == 0) {
+			throw new Error("Unable to locate installation ID");
+		}
 	}
 
 	// request an access token for the application instance
-	res = await webRequest("https://api.github.com/app/installations/" + installationId.toString() + "/access_tokens", {
+	if (!accessTokensUrl) {
+		accessTokensUrl = "https://api.github.com/app/installations/" + installationId.toString() + "/access_tokens";
+	}
+	res = await webRequest(accessTokensUrl, {
 		headers: reqHdrs,
 		method: "POST",
 		body: JSON.stringify({
@@ -117,7 +136,7 @@ function parseArguments() {
 			}
 			idx += 1 
 			if (idx >= args.length || args[idx].length == 0) {
-				throw new Error("Missing argument for '--pk' parameter.");
+				throw new Error("Missing argument for '" + args[idx - 1] + "' parameter.");
 			}
 			opts.privateKeyFile = args[idx];
 		}
@@ -127,20 +146,43 @@ function parseArguments() {
 			}
 			idx += 1;
 			if (idx >= args.length || args[idx].length == 0) {
-				throw new Error("Missing argument for '--app-id' parameter.");
+				throw new Error("Missing argument for '" + args[idx - 1] + "' parameter.");
 			}
 			opts.applicationId = parseInt(args[idx], 10);
 			if (isNaN(opts.applicationId) || opts.applicationId < 1) {
 				throw new Error("Invalid application ID.");
 			}
 		}
-		else if (args[idx] == "--perm") {
+		else if (args[idx] == "--inst-id") {
+			if (opts.installationId) {
+				throw new Error("Installation ID already specified.");
+			}
+			idx += 1;
+			if (idx >= args.length || args[idx].length == 0) {
+				throw new Error("Missing argument for '" + args[idx - 1] + "' parameter.");
+			}
+			opts.installationId = parseInt(args[idx], 10);
+			if (isNaN(opts.installationId) || opts.installationId < 1) {
+				throw new Error("Invalid installation ID.");
+			}
+		}
+		else if (args[idx] == "--org" || args[idx] == "--user") {
+			if (opts.userOrg) {
+				throw new Error("User/Organization name already specified.");
+			}
+			idx += 1;
+			if (idx >= args.length || args[idx].length == 0) {
+				throw new Error("Missing argument for '" + args[idx - 1] + "' parameter.");
+			}
+			opts.userOrg = args[idx];
+		}
+		else if (args[idx] == "--perm" || args[idx] == "--scope") {
 			if (opts.permissions) {
 				throw new Error("Access permissions already specified.");
 			}
 			idx += 1;
 			if (idx >= args.length || args[idx].length == 0) {
-				throw new Error("Missing argument for '--perm' parameter.");
+				throw new Error("Missing argument for '" + args[idx - 1] + "' parameter.");
 			}
 			opts.permissions = {};
 			for (let perm of args[idx].split(",")) {
@@ -168,7 +210,7 @@ function parseArguments() {
 			}
 			idx += 1;
 			if (idx >= args.length || args[idx].length == 0) {
-				throw new Error("Missing argument for '--ua' parameter.");
+				throw new Error("Missing argument for '" + args[idx - 1] + "' parameter.");
 			}
 			opts.userAgent = args[idx];
 		}
