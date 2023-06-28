@@ -25,7 +25,7 @@ newly created application.
 Make sure you have [NodeJS](https://nodejs.org/en/download) installed as well as the latest version of the
 [`npm`](https://www.npmjs.com/package/npm) package.
 
-Run `npx [-y] github:c3exchange/github-app-token@latest {parameters}`
+Run `npx [-y] @c3exchange/github-app-token@latest {parameters}`
 
 Where `parameters` can be:
 

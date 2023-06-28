@@ -1,6 +1,6 @@
 {
   "name": "@c3exchange/github-app-token",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/c3exchange/github-app-token.git"
