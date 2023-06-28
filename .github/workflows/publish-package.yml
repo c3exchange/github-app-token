@@ -25,6 +25,6 @@ jobs:
       - name: Publishing
         shell: bash
         run: |
-          npm publish
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_C3EXCHANGE_TOKEN }}
